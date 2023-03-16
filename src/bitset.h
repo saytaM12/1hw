@@ -67,6 +67,8 @@ static inline _Bool bitset_getbit(bitset_t arr, bitset_index_t index)
             error_exit("bitset_alloc: Chyba alokace paměti");\
     }while(0)
 
+#ifndef USE_INLINE
+
 #define bitset_free(arr_param)\
                     free(arr_param)
 
@@ -79,4 +81,5 @@ static inline _Bool bitset_getbit(bitset_t arr, bitset_index_t index)
 #define bitset_getbit(arr_param, index_param)\
         bitset_getbit(arr_param, index_param)
 
-#endif
+#endif // USE_INLINE
+#endif // BITSET_INCLUDED

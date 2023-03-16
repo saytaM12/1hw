@@ -6,18 +6,18 @@
 
 void warning(const char *fmt, ...)
 {
-    va_list args;
-    va_start (args, fmt);
+    va_list ap;
+    va_start (ap, fmt);
     fputs("Warning: ", stderr);
-    vfprintf (stderr, fmt, args);
-    va_end (args);
+    vfprintf (stderr, fmt, ap);
+    va_end(ap);
 }
 void error_exit(const char *fmt, ...)
 {
-    va_list args;
-    va_start (args, fmt);
+    va_list ap;
+    va_start (ap, fmt);
     fputs("Error: ", stderr);
-    vfprintf (stderr, fmt, args);
-    va_end (args);
+    vfprintf (stderr, fmt, ap);
+    va_end(ap);
     exit(1);
 }

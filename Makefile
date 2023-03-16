@@ -1,50 +1,39 @@
-CC:=cc
-TARGET:=main
-CFLAGS:=-g -Wall -std=c17 -fsanitize=address
-RFLAGS:=-std=c17 -DNDEBUG -O3
+CC := clang
+OUT := main
+CFLAGS := -g -Wall -std=c11 -lm -pedantic
+RFLAGS := -std=c17 -lm -DNDEBUG -O3
+SRC := $(wildcard ./src/*.c)
 
-SRC:=$(wildcard src/*.c)
-DOBJ:=$(patsubst src/%.c, obj/debug/%.o, $(SRC))
-ROBJ:=$(patsubst src/%.c, obj/release/%.o, $(SRC))
+-include tmp
 
--include dep.d
+all: primes primes-i steg-decode
 
-.DEFAULT_GOAL:=debug
-
-.PHONY: debug
-.PHONY: release
-.PHONY: install
-.PHONY: clean
-.PHONY: rel
-.PHONY: deb
+run: all
 
 
-debug:
-	mkdir -p obj/debug
-	clang $(CFLAGS) -MM $(SRC) | sed -r 's/^.*$$/obj\/debug\/\0/' > dep.d
-	make deb
+primes:
+	mkdir -p obj
+	clang $(CFLAGS) -MM $(SRC) | > tmp
+	make inprimes
 
-release:
-	mkdir -p obj/release
-	clang $(CFLAGS) -MM $(SRC) | sed -r 's/^.*$$/obj\/release\/\0/' > dep.d
-	make rel
+inprimes: $(OBJS)
+	$(CC) $(CFLAGS) obj/primes.o obj/error.o obj/eratosthenes.o -o $<
 
-deb: $(DOBJ)
-	$(CC) $(CFLAGS) $^ -o $(TARGET)
-
-rel: $(ROBJ)
-	$(CC) $(RFLAGS) $^ -o $(TARGET)
-
-obj/debug/%.o: src/%.c
+obj/%.o: src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-obj/release/%.o: src/%.c
-	$(CC) $(RFLAGS) -c -o $@ $<
+primes-i: obj/primes-i.o obj/error-i.o obj/eratosthenes-i.o
+	$(CC) $(CFLAGS) obj/primes-i.o obj/error-i.o obj/eratosthenes-i.o -o $<
 
-install:
-	sudo cp -i $(TARGET) /bin/target
+steg-decode: obj/steg-decode.o obj/primes.o obj/ppm.o obj/eratosthenes.o
 
+obj/steg-decode.o: src/steg-decode.c src/error.h src/bitset.h src/ppm.h src/eratosthenes.h
+	$(CC) $(CFLAGS) src/steg-decode.c -o $<
+
+obj/ppm.o: src/ppm.c src/ppm.h src/error.h
+	$(CC) $(CFLAGS) src/ppm.c -o $<
+
+
+.PHONY: clean
 clean:
-	rm obj/debug/*.o || true
-	rm obj/release/*.o || true
-	rm $(TARGET) || true
+	rm ./obj/*.o
