@@ -16,7 +16,7 @@ void lastPrimes (bitset_t b, int count)
             printf("%d\n", i);
 }
 
-#ifdef primes_main
+#ifdef PRIMES_MAIN
 
 int main()
 {
@@ -26,4 +26,4 @@ int main()
     return 0;
 }
 
-#endif // primes_main
+#endif // PRIMES_MAIN

@@ -1,48 +1,50 @@
-CC := clang
-OUT := main
-CFLAGS := -g -Wall -std=c11 -lm -pedantic
-RFLAGS := -std=c17 -lm -DNDEBUG -O3
-SRC := $(wildcard ./src/*.c)
-PRIMESOBJS := $(patsubst ./src/%.c, ./obj/%.o, $(SRC))
-TARGET := main
+CC:=cc
+TARGET:=main
+CFLAGS:=-g -Wall -std=c17 -fsanitize=address -DPRIMES_MAIN
+RFLAGS:=-std=c17 -DNDEBUG -O3
 
--include tmp
+SRC:=$(wildcard src/*.c)
+DOBJ:=$(patsubst src/%.c, obj/debug/%.o, $(SRC))
+ROBJ:=$(patsubst src/%.c, obj/release/%.o, $(SRC))
 
-all: primes primes-i steg-decode
+-include dep.d
 
-run: all
-	./primes ulimit -s 20000
-	./primes-i ulimit -s 20000
+.DEFAULT_GOAL:=debug
 
-.PHONY: primes
-primes:
-	mkdir -p obj
-	clang $(CFLAGS) -MM $(SRC) > tmp
-	make inprimes TARGET="primes"
+.PHONY: debug
+.PHONY: release
+.PHONY: install
+.PHONY: clean
+.PHONY: rel
+.PHONY: deb
 
-.PHONY: primes-i
-primes-i:
-	mkdir -p obj
-	clang $(CFLAGS) -MM $(SRC) > tmp
-	make inprimes CFLAGS="$(CFLAGS) -DUSE_INLINE" TARGET="primes-i"
 
-.PHONY: steg-decode
-steg-decode:
-	mkdir -p obj
-	clang $(CFLAGS) -MM $(SRC) > tmp
-	make insteg-decode TARGET="steg-decode"
+debug:
+	mkdir -p obj/debug
+	clang $(CFLAGS) -MM $(SRC) | sed -r 's/^.*:.*$$/obj\/debug\/\0/' > dep.d
+	make deb
 
-.PHONY: insteg-decode
-insteg-decode: obj/steg-decode.o obj/primes.o obj/ppm.o obj/eratosthenes.o
-	$(CC) $(CFLAGS) $^ -o $<
+release:
+	mkdir -p obj/release
+	clang $(CFLAGS) -MM $(SRC) | sed -r 's/^.*$$/obj\/release\/\0/' > dep.d
+	make rel
 
-.PHONY: inprimes
-inprimes: $(PRIMESOBJS)
+deb: $(DOBJ)
 	$(CC) $(CFLAGS) $^ -o $(TARGET)
 
-obj/%.o: src/%.c
-	$(CC) $(CFLAGS) $^ -o $@
+rel: $(ROBJ)
+	$(CC) $(RFLAGS) $^ -o $(TARGET)
 
-.PHONY: clean
+obj/debug/%.o: src/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+obj/release/%.o: src/%.c
+	$(CC) $(RFLAGS) -c -o $@ $<
+
+install:
+	sudo cp -i $(TARGET) /bin/target
+
 clean:
-	rm ./obj/*.o
+	rm obj/debug/*.o || true
+	rm obj/release/*.o || true
+	rm $(TARGET) || true

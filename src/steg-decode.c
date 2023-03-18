@@ -27,7 +27,7 @@ void read_msg(struct ppm* img, bitset_t b)
             
 }
 
-#ifdef steg_main
+#ifdef STEG_MAIN
 
 int main()
 {
@@ -37,4 +37,4 @@ int main()
     read_msg(img, b);
 }
 
-#endif // steg_main
+#endif // STEG_MAIN
