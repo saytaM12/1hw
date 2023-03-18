@@ -1,3 +1,4 @@
-./obj/
-./dep.d
-./tmp
+obj/
+primes
+primes-i
+steg-decode
