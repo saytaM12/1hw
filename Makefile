@@ -2,17 +2,7 @@ CC := clang
 OUT := main
 CFLAGS := -g -Wall -std=c11 -lm -pedantic
 RFLAGS := -std=c17 -lm -DNDEBUG -O3
-PRIMESSRC := ./src/eratosthenes.c ./src/error.c ./src/primes.c
-PRIMESOBJS := $(patsubst ./src/%.c, ./obj/%.o, $(PRIMESSRC))
-STEGSRC := ./src/eratosthenes.c ./src/error.c ./src/ppm.c ./src/steg-decode.c
-STEGOBJS := $(patsubst ./src/%.c, ./obj/%.o, $(STEGSRC))
 TARGET := main
-
-eratosthenes.c: eratosthenes.h bitset.h
-error.c: error.h
-ppm.c: ppm.h error.c
-primes.c: bitset.h eratosthenes.c
-steg-decode: bitset.h ppm.c eratosthenes.c
 
 all: primes primes-i steg-decode
 
@@ -36,16 +26,26 @@ steg-decode:
 	make insteg-decode CFLAGS="$(CFLAGS) -DSTEG_MAIN" TARGET="steg-decode"
 
 .PHONY: inprimes
-inprimes: $(PRIMESOBJS)
+inprimes: obj/eratosthenes.o obj/error.o obj/primes.o
 	$(CC) $(CFLAGS) $^ -o $(TARGET)
 
 .PHONY: insteg-decode
-insteg-decode: $(STEGOBJS)
+insteg-decode: obj/eratosthenes.o obj/error.o obj/ppm.o obj/steg-decode.o
 	$(CC) $(CFLAGS) $^ -o $(TARGET)
 
 obj/%.o: src/%.c
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -c -o $@
 
 .PHONY: clean
 clean:
-	rm ./obj/*.o
+	rm -r ./obj/ primes primes-i steg-decode
+
+eratosthenes.c: eratosthenes.h bitset.h
+eratosthenes.h:
+bitset.h: error.c
+error.c: error.h
+error.h:
+ppm.c: ppm.h error.c
+ppm.h:
+primes.c: bitset.h eratosthenes.c
+steg-decode: bitset.h ppm.c eratosthenes.c
