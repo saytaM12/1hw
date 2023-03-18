@@ -1,6 +1,6 @@
 CC:=cc
 TARGET:=main
-CFLAGS:=-g -Wall -std=c17 -fsanitize=address -DPRIMES_MAIN
+CFLAGS:=-g -Wall -std=c17 -fsanitize=address -DSTEG_MAIN
 RFLAGS:=-std=c17 -DNDEBUG -O3
 
 SRC:=$(wildcard src/*.c)
