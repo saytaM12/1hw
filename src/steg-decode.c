@@ -26,7 +26,9 @@ void read_msg(struct ppm* img, bitset_t b)
     }
             
 }
-/*
+
+#ifdef steg_main
+
 int main()
 {
     struct ppm* img = ppm_read("img.ppm");
@@ -34,4 +36,5 @@ int main()
     eratosthenes(b);
     read_msg(img, b);
 }
-*/
+
+#endif // steg_main

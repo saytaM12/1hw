@@ -3,36 +3,45 @@ OUT := main
 CFLAGS := -g -Wall -std=c11 -lm -pedantic
 RFLAGS := -std=c17 -lm -DNDEBUG -O3
 SRC := $(wildcard ./src/*.c)
+PRIMESOBJS := $(patsubst ./src/%.c, ./obj/%.o, $(SRC))
+TARGET := main
 
 -include tmp
 
 all: primes primes-i steg-decode
 
 run: all
+	./primes ulimit -s 20000
+	./primes-i ulimit -s 20000
 
-
+.PHONY: primes
 primes:
 	mkdir -p obj
-	clang $(CFLAGS) -MM $(SRC) | > tmp
-	make inprimes
+	clang $(CFLAGS) -MM $(SRC) > tmp
+	make inprimes TARGET="primes"
 
-inprimes: $(OBJS)
-	$(CC) $(CFLAGS) obj/primes.o obj/error.o obj/eratosthenes.o -o $<
+.PHONY: primes-i
+primes-i:
+	mkdir -p obj
+	clang $(CFLAGS) -MM $(SRC) > tmp
+	make inprimes CFLAGS="$(CFLAGS) -DUSE_INLINE" TARGET="primes-i"
+
+.PHONY: steg-decode
+steg-decode:
+	mkdir -p obj
+	clang $(CFLAGS) -MM $(SRC) > tmp
+	make insteg-decode TARGET="steg-decode"
+
+.PHONY: insteg-decode
+insteg-decode: obj/steg-decode.o obj/primes.o obj/ppm.o obj/eratosthenes.o
+	$(CC) $(CFLAGS) $^ -o $<
+
+.PHONY: inprimes
+inprimes: $(PRIMESOBJS)
+	$(CC) $(CFLAGS) $^ -o $(TARGET)
 
 obj/%.o: src/%.c
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-primes-i: obj/primes-i.o obj/error-i.o obj/eratosthenes-i.o
-	$(CC) $(CFLAGS) obj/primes-i.o obj/error-i.o obj/eratosthenes-i.o -o $<
-
-steg-decode: obj/steg-decode.o obj/primes.o obj/ppm.o obj/eratosthenes.o
-
-obj/steg-decode.o: src/steg-decode.c src/error.h src/bitset.h src/ppm.h src/eratosthenes.h
-	$(CC) $(CFLAGS) src/steg-decode.c -o $<
-
-obj/ppm.o: src/ppm.c src/ppm.h src/error.h
-	$(CC) $(CFLAGS) src/ppm.c -o $<
-
+	$(CC) $(CFLAGS) $^ -o $@
 
 .PHONY: clean
 clean:
