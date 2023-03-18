@@ -11,5 +11,5 @@ void eratosthenes(bitset_t b)
     for (int i = 2; i < bitset_size(b); ++i)
         if (!bitset_getbit(b, i))
             for (int j = i * 2; j < bitset_size(b); j+=i)
-                bitset_setbit(b, j, 1);
+                bitset_setbit(b, j, 1);;
 }

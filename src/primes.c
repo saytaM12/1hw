@@ -2,7 +2,9 @@
 // Řešení IJC-DU1, příklad a), 20.3.2023
 // Autor: Matyáš Oujezdský, FIT
 // Přeloženo: clang version 10.0.0-4ubuntu1
-#include "primes.h"
+#include <stdio.h>
+#include "bitset.h"
+#include "eratosthenes.h"
 
 void lastPrimes (bitset_t b, int count)
 {
@@ -23,7 +25,7 @@ int main()
     bitset_create(b, 23000000);
     eratosthenes(b);
     lastPrimes(b, 10);
-    return 0;
+    return 0;;
 }
 
 #endif // PRIMES_MAIN

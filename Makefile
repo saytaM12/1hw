@@ -1,50 +1,51 @@
-CC:=cc
-TARGET:=main
-CFLAGS:=-g -Wall -std=c17 -fsanitize=address -DSTEG_MAIN
-RFLAGS:=-std=c17 -DNDEBUG -O3
+CC := clang
+OUT := main
+CFLAGS := -g -Wall -std=c11 -lm -pedantic
+RFLAGS := -std=c17 -lm -DNDEBUG -O3
+PRIMESSRC := ./src/eratosthenes.c ./src/error.c ./src/primes.c
+PRIMESOBJS := $(patsubst ./src/%.c, ./obj/%.o, $(PRIMESSRC))
+STEGSRC := ./src/eratosthenes.c ./src/error.c ./src/ppm.c ./src/steg-decode.c
+STEGOBJS := $(patsubst ./src/%.c, ./obj/%.o, $(STEGSRC))
+TARGET := main
 
-SRC:=$(wildcard src/*.c)
-DOBJ:=$(patsubst src/%.c, obj/debug/%.o, $(SRC))
-ROBJ:=$(patsubst src/%.c, obj/release/%.o, $(SRC))
+eratosthenes.c: eratosthenes.h bitset.h
+error.c: error.h
+ppm.c: ppm.h error.c
+primes.c: bitset.h eratosthenes.c
+steg-decode: bitset.h ppm.c eratosthenes.c
 
--include dep.d
+all: primes primes-i steg-decode
 
-.DEFAULT_GOAL:=debug
+run: primes primes-i
+	./primes ulimit -s 20000
+	./primes-i ulimit -s 20000
 
-.PHONY: debug
-.PHONY: release
-.PHONY: install
-.PHONY: clean
-.PHONY: rel
-.PHONY: deb
+.PHONY: primes
+primes:
+	mkdir -p obj
+	make inprimes CFLAGS="$(CFLAGS) -DPRIMES_MAIN" TARGET="primes"
 
+.PHONY: primes-i
+primes-i:
+	mkdir -p obj
+	make inprimes CFLAGS="$(CFLAGS) -DUSE_INLINE -DPRIMES_MAIN" TARGET="primes-i"
 
-debug:
-	mkdir -p obj/debug
-	clang $(CFLAGS) -MM $(SRC) | sed -r 's/^.*:.*$$/obj\/debug\/\0/' > dep.d
-	make deb
+.PHONY: steg-decode
+steg-decode:
+	mkdir -p obj
+	make insteg-decode CFLAGS="$(CFLAGS) -DSTEG_MAIN" TARGET="steg-decode"
 
-release:
-	mkdir -p obj/release
-	clang $(CFLAGS) -MM $(SRC) | sed -r 's/^.*$$/obj\/release\/\0/' > dep.d
-	make rel
-
-deb: $(DOBJ)
+.PHONY: inprimes
+inprimes: $(PRIMESOBJS)
 	$(CC) $(CFLAGS) $^ -o $(TARGET)
 
-rel: $(ROBJ)
-	$(CC) $(RFLAGS) $^ -o $(TARGET)
+.PHONY: insteg-decode
+insteg-decode: $(STEGOBJS)
+	$(CC) $(CFLAGS) $^ -o $(TARGET)
 
-obj/debug/%.o: src/%.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+obj/%.o: src/%.c
+	$(CC) $(CFLAGS) $^ -o $@
 
-obj/release/%.o: src/%.c
-	$(CC) $(RFLAGS) -c -o $@ $<
-
-install:
-	sudo cp -i $(TARGET) /bin/target
-
+.PHONY: clean
 clean:
-	rm obj/debug/*.o || true
-	rm obj/release/*.o || true
-	rm $(TARGET) || true
+	rm ./obj/*.o

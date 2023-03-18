@@ -2,7 +2,11 @@
 // Řešení IJC-DU1, příklad b), 20.3.2023
 // Autor: Matyáš Oujezdský, FIT
 // Přeloženo: clang version 10.0.0-4ubuntu1
-#include "steg-decode.h"
+#include <stdio.h>
+#include "error.h"
+#include "bitset.h"
+#include "ppm.h"
+#include "eratosthenes.h"
 
 void read_msg(struct ppm* img, bitset_t b)
 {
@@ -36,7 +40,7 @@ int main()
     eratosthenes(b);
     read_msg(img, b);
     bitset_free(b);
-    ppm_free(img);
+    ppm_free(img);;
 }
 
 #endif // STEG_MAIN
