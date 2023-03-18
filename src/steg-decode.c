@@ -40,7 +40,7 @@ int main()
     eratosthenes(b);
     read_msg(img, b);
     bitset_free(b);
-    ppm_free(img);;
+    ppm_free(img);
 }
 
 #endif // STEG_MAIN

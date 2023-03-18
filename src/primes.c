@@ -25,7 +25,7 @@ int main()
     bitset_create(b, 23000000);
     eratosthenes(b);
     lastPrimes(b, 10);
-    return 0;;
+    return 0;
 }
 
 #endif // PRIMES_MAIN

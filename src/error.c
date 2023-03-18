@@ -19,5 +19,5 @@ void error_exit(const char *fmt, ...)
     fputs("Error: ", stderr);
     vfprintf (stderr, fmt, ap);
     va_end(ap);
-    exit(1);;
+    exit(1);
 }

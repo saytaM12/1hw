@@ -1,51 +1,54 @@
 CC := clang
-OUT := main
 CFLAGS := -g -Wall -std=c11 -lm -pedantic
-RFLAGS := -std=c17 -lm -DNDEBUG -O3
-TARGET := main
 
-all: primes primes-i steg-decode
+all: directory primes primes-i steg-decode
 
 run: primes primes-i
 	./primes ulimit -s 20000
 	./primes-i ulimit -s 20000
 
-.PHONY: primes
-primes:
+directory:
 	mkdir -p obj
-	make inprimes CFLAGS="$(CFLAGS) -DPRIMES_MAIN" TARGET="primes"
 
-.PHONY: primes-i
-primes-i:
-	mkdir -p obj
-	make inprimes CFLAGS="$(CFLAGS) -DUSE_INLINE -DPRIMES_MAIN" TARGET="primes-i"
+primes: obj/eratosthenes.o obj/error.o obj/primes.o
+	$(CC) $(CFLAGS) $^ -o $@
 
-.PHONY: steg-decode
-steg-decode:
-	mkdir -p obj
-	make insteg-decode CFLAGS="$(CFLAGS) -DSTEG_MAIN" TARGET="steg-decode"
+primes-i: obj/eratosthenes.o obj/error.o obj/primes-i.o
+	$(CC) $(CFLAGS) $^ -o $@
 
-.PHONY: inprimes
-inprimes: obj/eratosthenes.o obj/error.o obj/primes.o
-	$(CC) $(CFLAGS) $^ -o $(TARGET)
+steg-decode: obj/eratosthenes.o obj/error.o obj/ppm.o obj/steg-decode.o
+	$(CC) $(CFLAGS) $^ -o $@
 
-.PHONY: insteg-decode
-insteg-decode: obj/eratosthenes.o obj/error.o obj/ppm.o obj/steg-decode.o
-	$(CC) $(CFLAGS) $^ -o $(TARGET)
 
-obj/%.o: src/%.c
-	$(CC) $(CFLAGS) $^ -c -o $@
+obj/eratosthenes.o: src/eratosthenes.c src/eratosthenes.h src/bitset.h src/error.h
+	$(CC) $(CFLAGS) src/eratosthenes.c -c -o obj/eratosthenes.o
+
+obj/error.o: src/error.c src/error.h
+	$(CC) $(CFLAGS) src/error.c -c -o obj/error.o
+
+obj/primes.o: src/primes.c src/bitset.h src/error.h src/eratosthenes.h
+	$(CC) $(CFLAGS) src/primes.c -DPRIMES_MAIN -c -o obj/primes.o
+
+obj/primes-i.o: src/primes.c src/bitset.h src/error.h src/eratosthenes.h
+	$(CC) $(CFLAGS) src/primes.c -DPRIMES_MAIN -DUSE_INLINE -c -o obj/primes-i.o
+
+obj/ppm.o: src/ppm.c src/ppm.h src/error.h
+	$(CC) $(CFLAGS) src/ppm.c -c -o obj/ppm.o
+
+obj/steg-decode.o: src/steg-decode.c src/error.h src/bitset.h src/ppm.h src/eratosthenes.h
+	$(CC) $(CFLAGS) src/steg-decode.c -DSTEG_MAIN -c -o obj/steg-decode.o
+
+
+#obj/%.o: src/%.c
+#	$(CC) $(CFLAGS) $^ -c -o $@
 
 .PHONY: clean
 clean:
 	rm -r ./obj/ primes primes-i steg-decode
 
-eratosthenes.c: eratosthenes.h bitset.h
-eratosthenes.h:
-bitset.h: error.c
-error.c: error.h
-error.h:
-ppm.c: ppm.h error.c
-ppm.h:
-primes.c: bitset.h eratosthenes.c
-steg-decode: bitset.h ppm.c eratosthenes.c
+#eratosthenes.c: src/eratosthenes.h src/bitset.h
+#bitset.h: src/error.c
+#error.c: src/error.h
+#ppm.c: src/ppm.h src/error.c
+#primes.c: src/bitset.h src/eratosthenes.c
+#steg-decode.c: src/bitset.h src/ppm.c src/eratosthenes.c
