@@ -108,13 +108,14 @@ int main(int argc, char** argv)
     if (argc != 2) {
         error_exit("main: Nesprávný počet vstupních argumentů");
     }
+
     struct ppm* img = ppm_read(argv[1]);
     bitset_alloc(b, 3 * img->xsize * img->ysize);
     
     eratosthenes(b);
     
     unsigned char *msg = read_msg(img, b, 101);
-    if (!utf8_check(msg))
+    if (utf8_check(msg))
         error_exit("Zpráva není UTF-8");
     
     printf("%s", msg);
