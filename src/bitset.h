@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "error.h"
 
 typedef unsigned long* bitset_t;
@@ -22,7 +23,7 @@ typedef unsigned long bitset_index_t;
         bitset_index_t index = (index_param);\
         if (index > arr[0])\
         {\
-            error_exit("bitset_setbit: Index %lu outside range 0..%lu", index, arr[0]);\
+            error_exit("bitset_setbit: Index %lu mimo rozsah 0..%lu", index, arr[0]);\
         }\
         if (value_param)\
             arr[index / UL_BITS + 1] |= (1L << index % UL_BITS);\
@@ -40,21 +41,23 @@ static inline bitset_index_t bitset_size(bitset_t arr_param)
     return arr_param[0];
 }
 
-static inline void bitset_setbit(bitset_t arr_param, bitset_index_t index_param, _Bool value_param)
+static inline void bitset_setbit(bitset_t arr_param, bitset_index_t index_param, bool value_param)
 {
       __bitset_setbit__(arr_param, index_param, value_param);
 }
 
-static inline _Bool bitset_getbit(bitset_t arr, bitset_index_t index)
+static inline bool bitset_getbit(bitset_t arr, bitset_index_t index)
 {
     if (index > arr[0])
-        error_exit("bitset_getbit: Index %lu outside range 0..%lu", index, arr[0]);
+        error_exit("bitset_getbit: Index %lu mimo rozsah 0..%lu", index, arr[0]);
     return (arr[index/UL_BITS + 1] & (1L << index % UL_BITS));
 }
 
 #define bitset_create(arr_param, size_param)\
     unsigned long arr_param[(size_param - 1) / UL_BITS + 2 * sizeof(bitset_index_t)] = {size_param};\
-    static_assert(size_param > 0, "Wrong size")
+    static_assert(size_param > 0, "bitset_create: Délka pole musí být kladná");\
+    static_assert(size_param < ULONG_MAX,\
+        "bitset_create: Délka pole musí být menší než maximální velikost neznaménkového longu")
                       
 #define bitset_alloc(arr_param, size_param)\
     bitset_t arr_param;\
@@ -65,6 +68,8 @@ static inline _Bool bitset_getbit(bitset_t arr, bitset_index_t index)
             arr_param[0] = size;\
         else\
             error_exit("bitset_alloc: Chyba alokace paměti");\
+        static_assert(size_param < ULONG_MAX,\
+            "bitset_alloc: Délka pole musí být menší než maximální velikost neznaménkového longu");
     }while(0)
 
 #ifndef USE_INLINE

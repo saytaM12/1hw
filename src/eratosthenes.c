@@ -8,8 +8,8 @@ void eratosthenes(bitset_t b)
 {
     bitset_setbit(b, 0, 1);
     bitset_setbit(b, 1, 1);
-    for (int i = 2; i < bitset_size(b); ++i)
+    for (bitset_index_t i = 2; i < bitset_size(b); ++i)
         if (!bitset_getbit(b, i))
-            for (int j = i * 2; j < bitset_size(b); j+=i)
+            for (bitset_index_t j = i * 2; j < bitset_size(b); j+=i)
                 bitset_setbit(b, j, 1);
 }

@@ -10,13 +10,13 @@
 void lastPrimes (bitset_t b, int count)
 {
     int prime_count = 0;
-    int i;
+    bitset_index_t i;
     for (i = bitset_size(b); prime_count < count; --i)
         if (!bitset_getbit(b, i))
             ++prime_count;
     for (; i < bitset_size(b); ++i)
         if (!bitset_getbit(b, i))
-            printf("%d\n", i);
+            printf("%lu\n", i);
 }
 
 int main()

@@ -12,7 +12,7 @@ void read_msg(struct ppm* img, bitset_t b)
 {
     unsigned char tmpchar = 0;
     int countchar = 0;
-    for (int i = 101; i < bitset_size(b); ++i)
+    for (bitset_index_t i = 101; i < bitset_size(b); ++i)
     {
         if (!bitset_getbit(b, i))
         {
