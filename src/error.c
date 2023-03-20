@@ -10,6 +10,7 @@ void warning(const char *fmt, ...)
     va_start (ap, fmt);
     fputs("Warning: ", stderr);
     vfprintf (stderr, fmt, ap);
+    fputs("\n", stderr);
     va_end(ap);
 }
 void error_exit(const char *fmt, ...)
@@ -18,6 +19,7 @@ void error_exit(const char *fmt, ...)
     va_start (ap, fmt);
     fputs("Error: ", stderr);
     vfprintf (stderr, fmt, ap);
+    fputs("\n", stderr);
     va_end(ap);
     exit(1);
 }

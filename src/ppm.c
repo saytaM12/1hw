@@ -7,6 +7,8 @@
 struct ppm* ppm_read(const char* filename)
 {
     FILE* f = fopen(filename, "rb");
+    if (!f)
+        error_exit("ppm_read: Nelze přečíst vstupní soubor (obrázek)");
     char format[3];
     unsigned size[2];
 
@@ -24,7 +26,7 @@ struct ppm* ppm_read(const char* filename)
     img->ysize = size[1];
 
     if (size[0] * size[1] != fread(img->data, 3, img->xsize * img->ysize, f))
-        error_exit("Invalid data");
+        error_exit("ppm_read: Nevalidní data");
 
     fclose(f);
 

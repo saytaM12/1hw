@@ -14,6 +14,8 @@ unsigned char* read_msg(struct ppm* img, bitset_t b, bitset_index_t start)
     unsigned char nextchar = 0;
     int strsize = 8;
     unsigned char *tmpstr = calloc(strsize, sizeof(unsigned char));
+    if (!tmpstr)
+        error_exit("read_msg: Nepodařilo se alokovat paměť pro zprávu");
     int charcount = 0;
     int bitcount = 0;
     for (bitset_index_t i = start; i < bitset_size(b); ++i)
@@ -40,7 +42,6 @@ unsigned char* read_msg(struct ppm* img, bitset_t b, bitset_index_t start)
             }
         }
     }
-    warning("read_msg: Nebyl nalezen konec řetězce ve zprávě\n");
     return NULL;
 }
 
@@ -115,8 +116,10 @@ int main(int argc, char** argv)
     eratosthenes(b);
     
     unsigned char *msg = read_msg(img, b, 101);
+    if (!msg)
+        error_exit("steg-decode: Nepovedlo se načíst zprávu");
     if (utf8_check(msg))
-        error_exit("Zpráva není UTF-8");
+        error_exit("steg-decode: Zpráva není UTF-8");
     
     printf("%s", msg);
     
