@@ -9,6 +9,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <assert.h>
 #include "error.h"
 
 typedef unsigned long* bitset_t;
@@ -55,21 +56,20 @@ static inline bool bitset_getbit(bitset_t arr, bitset_index_t index)
 
 #define bitset_create(arr_param, size_param)\
     unsigned long arr_param[(size_param - 1) / UL_BITS + 2 * sizeof(bitset_index_t)] = {size_param};\
-    static_assert(size_param > 0, "bitset_create: Délka pole musí být kladná");\
-    static_assert(size_param < ULONG_MAX,\
+    static_assert((size_param) > 0, "bitset_create: Délka pole musí být kladná");\
+    static_assert((size_param) < ULONG_MAX,\
         "bitset_create: Délka pole musí být menší než maximální velikost neznaménkového longu")
                       
 #define bitset_alloc(arr_param, size_param)\
     bitset_t arr_param;\
     do{\
-        bitset_index_t size = (size_param);\
+        bitset_index_t size = size_param;\
+        assert(size < ULONG_MAX);\
         arr_param = calloc((size - 1) / UL_BITS + 2, sizeof(bitset_index_t));\
         if (arr_param)\
             arr_param[0] = size;\
         else\
             error_exit("bitset_alloc: Chyba alokace paměti");\
-        static_assert(size_param < ULONG_MAX,\
-            "bitset_alloc: Délka pole musí být menší než maximální velikost neznaménkového longu");
     }while(0)
 
 #ifndef USE_INLINE
