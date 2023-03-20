@@ -3,6 +3,7 @@
 // Autor: Matyáš Oujezdský, FIT
 // Přeloženo: clang version 10.0.0-4ubuntu1
 #include <stdio.h>
+#include <time.h>
 #include "bitset.h"
 #include "eratosthenes.h"
 
@@ -20,8 +21,10 @@ void lastPrimes (bitset_t b, int count)
 
 int main()
 {
+    int start = clock();
     bitset_create(b, 23000000);
     eratosthenes(b);
     lastPrimes(b, 10);
+    fprintf(stderr, "Time=%.3g\n", (double)(clock()-start)/CLOCKS_PER_SEC);
     return 0;
 }
