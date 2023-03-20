@@ -76,7 +76,7 @@ static inline _Bool bitset_getbit(bitset_t arr, bitset_index_t index)
                    (arr_param)[0]
 
 #define bitset_setbit(arr_param, index_param, value_param)\
-      __bitset_setbit__(arr_param, index_param, value_param)
+      __bitset_setbit__(arr_param, index_param, value_param);
 
 #define bitset_getbit(arr_param, index_param)\
         bitset_getbit(arr_param, index_param)

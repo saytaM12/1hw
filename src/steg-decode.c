@@ -31,8 +31,6 @@ void read_msg(struct ppm* img, bitset_t b)
             
 }
 
-#ifdef STEG_MAIN
-
 int main()
 {
     struct ppm* img = ppm_read("./src/img.ppm");
@@ -42,5 +40,3 @@ int main()
     bitset_free(b);
     ppm_free(img);
 }
-
-#endif // STEG_MAIN
