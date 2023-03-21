@@ -4,8 +4,8 @@ CFLAGS := -g -Wall -std=c11 -lm -pedantic -Wextra -O3
 all: directory primes primes-i steg-decode
 
 run: directory primes primes-i
-	./primes ulimit -s 20000
-	./primes-i ulimit -s 20000
+	ulimit -s 30000 ; ./primes
+	ulimit -s 30000 ; ./primes-i
 
 directory:
 	mkdir -p obj

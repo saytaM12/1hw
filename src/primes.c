@@ -22,7 +22,7 @@ void lastPrimes (bitset_t b, int count)
 int main()
 {
     int start = clock();
-    bitset_create(b, 23000000);
+    bitset_create(b, 230000000);
     eratosthenes(b);
     lastPrimes(b, 10);
     fprintf(stderr, "Time=%.3g\n", (double)(clock()-start)/CLOCKS_PER_SEC);
