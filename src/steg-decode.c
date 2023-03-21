@@ -33,7 +33,7 @@ unsigned char* read_msg(struct ppm* img, bitset_t b, bitset_index_t start)
                 bitcount = 0;
                 nextchar = 0;
 
-                if (++charcount > strsize)
+                if (++charcount >= strsize)
                 {
                     strsize *= 2;
                     tmpstr = realloc(tmpstr, strsize);
@@ -42,6 +42,7 @@ unsigned char* read_msg(struct ppm* img, bitset_t b, bitset_index_t start)
             }
         }
     }
+    free(tmpstr);
     return NULL;
 }
 
@@ -117,7 +118,11 @@ int main(int argc, char** argv)
     
     unsigned char *msg = read_msg(img, b, 101);
     if (!msg)
+    {
         error_exit("steg-decode: Nepovedlo se načíst zprávu");
+        bitset_free(b);
+        ppm_free(img);
+    }
     if (utf8_check(msg))
         error_exit("steg-decode: Zpráva není UTF-8");
     
@@ -125,6 +130,7 @@ int main(int argc, char** argv)
     
     bitset_free(b);
     ppm_free(img);
+    free(msg);
 
     return 0;
 }

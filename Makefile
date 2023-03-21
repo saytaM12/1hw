@@ -1,10 +1,10 @@
 CC := clang
-CFLAGS := -g -Wall -std=c11 -lm -pedantic -Wextra -O3
+CFLAGS := -g -Wall -std=c11 -lm -pedantic -Wextra -O3 -fsanitize=address
 
 all: directory primes primes-i steg-decode
 
 run: directory primes primes-i
-	ulimit -s 30000 ; ./primes
+	ulimit -s 30000 ; ./primes|factor
 	ulimit -s 30000 ; ./primes-i
 
 directory:
