@@ -1,14 +1,11 @@
 CC := clang
 CFLAGS := -g -Wall -std=c11 -lm -pedantic -Wextra -O3 -fsanitize=address
+CREATEDIR := $(shell mkdir -p obj)
+all: primes primes-i steg-decode
 
-all: directory primes primes-i steg-decode
-
-run: directory primes primes-i
+run: primes primes-i
 	ulimit -s 30000 ; ./primes
 	ulimit -s 30000 ; ./primes-i
-
-directory:
-	mkdir -p obj
 
 primes: obj/eratosthenes.o obj/error.o obj/primes.o
 	$(CC) $(CFLAGS) $^ -o $@
@@ -24,7 +21,6 @@ obj/eratosthenes.o: src/eratosthenes.c src/eratosthenes.h src/bitset.h src/error
 obj/error.o: src/error.c src/error.h
 obj/primes.o: src/primes.c src/bitset.h src/error.h src/eratosthenes.h
 obj/eratosthenes-i.o: src/eratosthenes.c src/eratosthenes.h src/bitset.h src/error.h
-obj/error-i.o: src/error.c src/error.h
 obj/primes-i.o: src/primes.c src/bitset.h src/error.h src/eratosthenes.h
 obj/ppm.o: src/ppm.c src/ppm.h src/error.h
 obj/steg-decode.o: src/steg-decode.c src/error.h src/bitset.h src/ppm.h src/eratosthenes.h
